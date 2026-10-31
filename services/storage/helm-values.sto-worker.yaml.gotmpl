@@ -1,12 +1,11 @@
-{{- $profiles := dict
-  "sto-worker" (dict "pool" "threads" "concurrency" "100" "queues" "default")
-  "sto-worker-cpu-bound" (dict "pool" "prefork" "concurrency" "1" "queues" "cpu_bound") }}
-{{- $profile := index $profiles .Release.Name | required (printf "no celery profile for release %s" .Release.Name) }}
-
 service:
   enabled: false
 
 env:
+  CELERY_CONCURRENCY: "100"
+  CELERY_POOL: "threads"
+  CELERY_QUEUES: "default"
+  HEALTHCHECK_MODE: "heartbeat"
   NODE_NAME:
     valueFrom:
       fieldRef:
@@ -20,11 +19,7 @@ env:
       fieldRef:
         fieldPath: metadata.uid
   STORAGE_BOOT_SERVER_MODE: "AS_CELERY_WORKER"
-  STORAGE_WORKER_NAME: "{{ .Release.Name }}-$(NODE_NAME)-$(POD_NAME)-$(POD_UID)"
-  HEALTHCHECK_MODE: "heartbeat"
-  CELERY_QUEUES: {{ $profile.queues | quote }}
-  CELERY_CONCURRENCY: {{ $profile.concurrency | quote }}
-  CELERY_POOL: {{ $profile.pool | quote }}
+  STORAGE_WORKER_NAME: "sto-worker-$(NODE_NAME)-$(POD_NAME)-$(POD_UID)"
 
 # a celery worker serves no HTTP: healthy == worker heartbeat written to /tmp/heartbeat
 probes:

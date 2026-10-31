@@ -69,7 +69,7 @@ releases:
       - {{ $namespace }}/storage
     values:
       - storage/helm-values.yaml.gotmpl
-      - storage/helm-values.worker.yaml.gotmpl
+      - storage/helm-values.sto-worker.yaml.gotmpl
 
   - name: sto-worker-cpu-bound
     namespace: {{ $namespace }}
@@ -79,4 +79,4 @@ releases:
       - {{ $namespace }}/storage
     values:
       - storage/helm-values.yaml.gotmpl
-      - storage/helm-values.worker.yaml.gotmpl
+      - storage/helm-values.sto-worker-cpu-bound.yaml.gotmpl
