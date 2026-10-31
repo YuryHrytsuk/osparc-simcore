@@ -45,6 +45,12 @@ releases:
     inherit:
       - template: simcore-service
 
+  - name: payments
+    inherit:
+      - template: simcore-service
+    needs:
+      - {{ $namespace }}/resource-usage-tracker
+
   - name: resource-usage-tracker
     inherit:
       - template: simcore-service
