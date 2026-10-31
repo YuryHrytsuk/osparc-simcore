@@ -3,6 +3,9 @@ apiVersion: kind.x-k8s.io/v1alpha4
 
 nodes:
   - role: control-plane
+    extraMounts: # some simcore service require socket
+    - hostPath: /var/run/docker.sock
+      containerPath: /var/run/docker.sock
     extraPortMappings:
       # postgres
       - containerPort: 30432

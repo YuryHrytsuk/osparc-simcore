@@ -1,0 +1,73 @@
+resources:
+  requests:
+    cpu: 100m
+    memory: 100Mi
+  limits:
+    cpu: "1"
+    memory: 512Mi
+
+env:
+  - name: CATALOG_BACKGROUND_TASK_REST_TIME
+    value: {{ requiredEnv "CATALOG_BACKGROUND_TASK_REST_TIME" | quote }}
+  - name: CATALOG_DEV_FEATURES_ENABLED
+    value: {{ requiredEnv "CATALOG_DEV_FEATURES_ENABLED" | quote }}
+  - name: CATALOG_LOGLEVEL
+    value: {{ requiredEnv "CATALOG_LOGLEVEL" | quote }}
+  - name: CATALOG_PROFILING
+    value: {{ requiredEnv "CATALOG_PROFILING" | quote }}
+  - name: CATALOG_SERVICES_DEFAULT_RESOURCES
+    value: {{ requiredEnv "CATALOG_SERVICES_DEFAULT_RESOURCES" | quote }}
+  - name: CATALOG_SERVICES_DEFAULT_SPECIFICATIONS
+    value: {{ requiredEnv "CATALOG_SERVICES_DEFAULT_SPECIFICATIONS" | quote }}
+  - name: CATALOG_TRACING
+    value: {{ requiredEnv "CATALOG_TRACING" | quote }}
+  - name: DIRECTOR_DEFAULT_MAX_MEMORY
+    value: {{ requiredEnv "DIRECTOR_DEFAULT_MAX_MEMORY" | quote }}
+  - name: DIRECTOR_DEFAULT_MAX_NANO_CPUS
+    value: {{ requiredEnv "DIRECTOR_DEFAULT_MAX_NANO_CPUS" | quote }}
+  - name: DIRECTOR_HOST
+    value: {{ env "DIRECTOR_HOST" | default "director" | quote }}
+  - name: DIRECTOR_PORT
+    value: {{ env "DIRECTOR_PORT" | default "8080" | quote }}
+  - name: LOG_FILTER_MAPPING
+    value: {{ requiredEnv "LOG_FILTER_MAPPING" | quote }}
+  - name: LOG_FORMAT_LOCAL_DEV_ENABLED
+    value: {{ requiredEnv "LOG_FORMAT_LOCAL_DEV_ENABLED" | quote }}
+  - name: POSTGRES_DB
+    value: {{ requiredEnv "POSTGRES_DB" | quote }}
+  - name: POSTGRES_HOST
+    value: {{ requiredEnv "POSTGRES_HOST" | quote }}
+  - name: POSTGRES_MAX_OVERFLOW
+    value: {{ requiredEnv "POSTGRES_MAX_OVERFLOW" | quote }}
+  - name: POSTGRES_MAX_POOLSIZE
+    value: {{ requiredEnv "POSTGRES_MAX_POOLSIZE" | quote }}
+  - name: POSTGRES_PASSWORD
+    value: {{ requiredEnv "POSTGRES_PASSWORD" | quote }}
+    sensitive: true
+  - name: POSTGRES_PORT
+    value: {{ requiredEnv "POSTGRES_PORT" | quote }}
+  - name: POSTGRES_USER
+    value: {{ requiredEnv "POSTGRES_USER" | quote }}
+  - name: RABBIT_HOST
+    value: {{ requiredEnv "RABBIT_HOST" | quote }}
+  - name: RABBIT_PASSWORD
+    value: {{ requiredEnv "RABBIT_PASSWORD" | quote }}
+    sensitive: true
+  - name: RABBIT_PORT
+    value: {{ requiredEnv "RABBIT_PORT" | quote }}
+  - name: RABBIT_SECURE
+    value: {{ requiredEnv "RABBIT_SECURE" | quote }}
+  - name: RABBIT_USER
+    value: {{ requiredEnv "RABBIT_USER" | quote }}
+  - name: TRACING_OPENTELEMETRY_COLLECTOR_BATCH_SIZE
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_COLLECTOR_BATCH_SIZE" | quote }}
+  - name: TRACING_OPENTELEMETRY_COLLECTOR_ENDPOINT
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_COLLECTOR_ENDPOINT" | quote }}
+  - name: TRACING_OPENTELEMETRY_COLLECTOR_IMAGE_VERSION
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_COLLECTOR_IMAGE_VERSION" | quote }}
+  - name: TRACING_OPENTELEMETRY_COLLECTOR_PORT
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_COLLECTOR_PORT" | quote }}
+  - name: TRACING_OPENTELEMETRY_SAMPLING_PROBABILITY
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_SAMPLING_PROBABILITY" | quote }}
+  - name: TRACING_OPENTELEMETRY_TRACED_FUNCTIONS
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_TRACED_FUNCTIONS" | quote }}

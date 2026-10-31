@@ -1,14 +1,18 @@
+{{- $namespace := "simcore" -}}
+
 helmDefaults:
+  # wait for release to finish before continuing
+  # needed if one relies on the other
   wait: true
-  waitForJobs: true
+  waitForJobs: true # extend for jobs that belong to releases
   timeout: 600
 
-  # avoid helm diff errors on 1st installation
+  # helm diff: avoid errors on 1st installation
   disableValidation: true
 
 templates:
   simcore-service:
-    namespace: simcore
+    namespace: {{ $namespace }}
     createNamespace: true
     chart: ../charts/simcore-service
     values:
@@ -16,7 +20,17 @@ templates:
       - "{{`{{ .Release.Name }}`}}/helm-values.yaml.gotmpl"
 
 releases:
+  - name: catalog
+    inherit:
+      - template: simcore-service
+    needs:
+      - {{ $namespace }}/director
+
   - name: datcore-adapter
+    inherit:
+      - template: simcore-service
+
+  - name: director
     inherit:
       - template: simcore-service
 

@@ -57,6 +57,9 @@ probes:
 
 env: []
 
+extraVolumes: []
+extraVolumeMounts: []
+
 networkPolicy:
   enabled: false
   ingress: []

@@ -1,0 +1,132 @@
+# entrypoint.sh adds scu to the docker socket's group, which needs a writable /etc
+containerSecurityContext:
+  readOnlyRootFilesystem: false
+
+extraVolumes:
+  - name: docker-socket
+    hostPath:
+      path: /var/run/docker.sock
+      type: Socket
+
+extraVolumeMounts:
+  - name: docker-socket
+    mountPath: /var/run/docker.sock
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 100Mi
+  limits:
+    cpu: "1"
+    memory: 512Mi
+
+env:
+  - name: DIRECTOR_DEFAULT_MAX_MEMORY
+    value: {{ requiredEnv "DIRECTOR_DEFAULT_MAX_MEMORY" | quote }}
+  - name: DIRECTOR_DEFAULT_MAX_NANO_CPUS
+    value: {{ requiredEnv "DIRECTOR_DEFAULT_MAX_NANO_CPUS" | quote }}
+  - name: DIRECTOR_GENERIC_RESOURCE_PLACEMENT_CONSTRAINTS_SUBSTITUTIONS
+    value: {{ requiredEnv "DIRECTOR_GENERIC_RESOURCE_PLACEMENT_CONSTRAINTS_SUBSTITUTIONS" | quote }}
+  - name: DIRECTOR_LOG_FORMAT_LOCAL_DEV_ENABLED
+    value: {{ requiredEnv "LOG_FORMAT_LOCAL_DEV_ENABLED" | quote }}
+  - name: DIRECTOR_LOGLEVEL
+    value: {{ requiredEnv "DIRECTOR_LOGLEVEL" | quote }}
+  - name: DIRECTOR_MONITORING_ENABLED
+    value: {{ requiredEnv "DIRECTOR_MONITORING_ENABLED" | quote }}
+  - name: DIRECTOR_OSPARC_CUSTOM_DOCKER_PLACEMENT_CONSTRAINTS
+    value: {{ requiredEnv "DIRECTOR_OSPARC_CUSTOM_DOCKER_PLACEMENT_CONSTRAINTS" | quote }}
+  - name: DIRECTOR_PUBLISHED_HOST_NAME
+    value: {{ requiredEnv "DIRECTOR_PUBLISHED_HOST_NAME" | quote }}
+  - name: DIRECTOR_REGISTRY_CACHING
+    value: {{ requiredEnv "DIRECTOR_REGISTRY_CACHING" | quote }}
+  - name: DIRECTOR_REGISTRY_CACHING_TTL
+    value: {{ requiredEnv "DIRECTOR_REGISTRY_CACHING_TTL" | quote }}
+  - name: DIRECTOR_SERVICES_CUSTOM_LABELS
+    value: {{ requiredEnv "DIRECTOR_SERVICES_CUSTOM_LABELS" | quote }}
+  - name: DIRECTOR_SERVICES_CUSTOM_PLACEMENT_CONSTRAINTS
+    value: {{ requiredEnv "DIRECTOR_SERVICES_CUSTOM_PLACEMENT_CONSTRAINTS" | quote }}
+  - name: DIRECTOR_TRACING
+    value: {{ requiredEnv "DIRECTOR_TRACING" | quote }}
+  - name: POSTGRES_DB
+    value: {{ requiredEnv "POSTGRES_DB" | quote }}
+  - name: POSTGRES_HOST
+    value: {{ requiredEnv "POSTGRES_HOST" | quote }}
+  - name: POSTGRES_MAX_OVERFLOW
+    value: {{ requiredEnv "POSTGRES_MAX_OVERFLOW" | quote }}
+  - name: POSTGRES_MAX_POOLSIZE
+    value: {{ requiredEnv "POSTGRES_MAX_POOLSIZE" | quote }}
+  - name: POSTGRES_PASSWORD
+    value: {{ requiredEnv "POSTGRES_PASSWORD" | quote }}
+    sensitive: true
+  - name: POSTGRES_PORT
+    value: {{ requiredEnv "POSTGRES_PORT" | quote }}
+  - name: POSTGRES_USER
+    value: {{ requiredEnv "POSTGRES_USER" | quote }}
+  - name: REDIS_HOST
+    value: {{ requiredEnv "REDIS_HOST" | quote }}
+  - name: REDIS_PASSWORD
+    value: {{ requiredEnv "REDIS_PASSWORD" | quote }}
+    sensitive: true
+  - name: REDIS_PORT
+    value: {{ requiredEnv "REDIS_PORT" | quote }}
+  - name: REDIS_SECURE
+    value: {{ requiredEnv "REDIS_SECURE" | quote }}
+  - name: REDIS_USER
+    value: {{ requiredEnv "REDIS_USER" | quote }}
+  - name: REGISTRY_AUTH
+    value: {{ requiredEnv "REGISTRY_AUTH" | quote }}
+  - name: REGISTRY_PATH
+    value: {{ env "REGISTRY_PATH" | quote }}
+  - name: REGISTRY_PW
+    value: {{ requiredEnv "REGISTRY_PW" | quote }}
+    sensitive: true
+  - name: REGISTRY_SSL
+    value: {{ requiredEnv "REGISTRY_SSL" | quote }}
+  - name: REGISTRY_URL
+    value: {{ requiredEnv "REGISTRY_URL" | quote }}
+  - name: REGISTRY_USER
+    value: {{ requiredEnv "REGISTRY_USER" | quote }}
+  - name: SIMCORE_SERVICES_NETWORK_NAME
+    value: {{ env "SIMCORE_SERVICES_NETWORK_NAME" | default "interactive_services_subnet" | quote }}
+  - name: STORAGE_ENDPOINT
+    value: {{ requiredEnv "STORAGE_ENDPOINT" | quote }}
+  - name: SWARM_STACK_NAME
+    value: {{ requiredEnv "SWARM_STACK_NAME" | quote }}
+  - name: TRACING_OPENTELEMETRY_COLLECTOR_BATCH_SIZE
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_COLLECTOR_BATCH_SIZE" | quote }}
+  - name: TRACING_OPENTELEMETRY_COLLECTOR_ENDPOINT
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_COLLECTOR_ENDPOINT" | quote }}
+  - name: TRACING_OPENTELEMETRY_COLLECTOR_IMAGE_VERSION
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_COLLECTOR_IMAGE_VERSION" | quote }}
+  - name: TRACING_OPENTELEMETRY_COLLECTOR_PORT
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_COLLECTOR_PORT" | quote }}
+  - name: TRACING_OPENTELEMETRY_SAMPLING_PROBABILITY
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_SAMPLING_PROBABILITY" | quote }}
+  - name: TRACING_OPENTELEMETRY_TRACED_FUNCTIONS
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_TRACED_FUNCTIONS" | quote }}
+  - name: TRAEFIK_SIMCORE_ZONE
+    value: {{ requiredEnv "TRAEFIK_SIMCORE_ZONE" | quote }}
+
+# no route served at "/", the image's HEALTHCHECK probes /v0/
+probes:
+  startup:
+    httpGet:
+      path: /v0/
+      port: http
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 24
+  readiness:
+    httpGet:
+      path: /v0/
+      port: http
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  liveness:
+    httpGet:
+      path: /v0/
+      port: http
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5
