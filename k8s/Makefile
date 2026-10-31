@@ -43,8 +43,14 @@ helmfile-destroy: .helmfile-destroy ## Destroy services
 .PHONY: helmfile-diff
 helmfile-diff: .helmfile-diff ## Shows changes in services
 
+.PHONY: helmfile-lint
+helmfile-lint: .helmfile-lint ## Lints all services
+
 .PHONY: helmfile-list
 helmfile-list: .helmfile-list ## Lists all services
 
 .PHONY: helmfile-sync
 helmfile-sync: .helmfile-sync # Only use if you know why
+
+.PHONY: helmfile-template
+helmfile-template: .helmfile-template ## Renders manifests of all services
