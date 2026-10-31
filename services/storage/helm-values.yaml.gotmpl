@@ -1,0 +1,121 @@
+# entrypoint.sh runs update-ca-certificates, which needs a writable /etc
+containerSecurityContext:
+  readOnlyRootFilesystem: false
+
+containerPort: {{ requiredEnv "STORAGE_PORT" | quote }}
+service:
+  port: {{ requiredEnv "STORAGE_PORT" | quote }}
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 100Mi
+  limits:
+    cpu: "1"
+    memory: 512Mi
+
+env:
+  - name: DATCORE_ADAPTER_HOST
+    value: {{ env "DATCORE_ADAPTER_HOST" | default "datcore-adapter" | quote }}
+  - name: LOG_FILTER_MAPPING
+    value: {{ requiredEnv "LOG_FILTER_MAPPING" | quote }}
+  - name: LOG_FORMAT_LOCAL_DEV_ENABLED
+    value: {{ requiredEnv "LOG_FORMAT_LOCAL_DEV_ENABLED" | quote }}
+  - name: POSTGRES_DB
+    value: {{ requiredEnv "POSTGRES_DB" | quote }}
+  - name: POSTGRES_HOST
+    value: {{ requiredEnv "POSTGRES_HOST" | quote }}
+  - name: POSTGRES_MAX_OVERFLOW
+    value: {{ requiredEnv "POSTGRES_MAX_OVERFLOW" | quote }}
+  - name: POSTGRES_MAX_POOLSIZE
+    value: {{ requiredEnv "POSTGRES_MAX_POOLSIZE" | quote }}
+  - name: POSTGRES_PASSWORD
+    value: {{ requiredEnv "POSTGRES_PASSWORD" | quote }}
+    sensitive: true
+  - name: POSTGRES_PORT
+    value: {{ requiredEnv "POSTGRES_PORT" | quote }}
+  - name: POSTGRES_USER
+    value: {{ requiredEnv "POSTGRES_USER" | quote }}
+  - name: RABBIT_HOST
+    value: {{ requiredEnv "RABBIT_HOST" | quote }}
+  - name: RABBIT_PASSWORD
+    value: {{ requiredEnv "RABBIT_PASSWORD" | quote }}
+    sensitive: true
+  - name: RABBIT_PORT
+    value: {{ requiredEnv "RABBIT_PORT" | quote }}
+  - name: RABBIT_SECURE
+    value: {{ requiredEnv "RABBIT_SECURE" | quote }}
+  - name: RABBIT_USER
+    value: {{ requiredEnv "RABBIT_USER" | quote }}
+  - name: REDIS_HOST
+    value: {{ requiredEnv "REDIS_HOST" | quote }}
+  - name: REDIS_PASSWORD
+    value: {{ requiredEnv "REDIS_PASSWORD" | quote }}
+    sensitive: true
+  - name: REDIS_PORT
+    value: {{ requiredEnv "REDIS_PORT" | quote }}
+  - name: REDIS_SECURE
+    value: {{ requiredEnv "REDIS_SECURE" | quote }}
+  - name: REDIS_USER
+    value: {{ requiredEnv "REDIS_USER" | quote }}
+  - name: S3_ACCESS_KEY
+    value: {{ requiredEnv "S3_ACCESS_KEY" | quote }}
+  - name: S3_BUCKET_NAME
+    value: {{ requiredEnv "S3_BUCKET_NAME" | quote }}
+  - name: S3_ENDPOINT
+    value: {{ requiredEnv "S3_ENDPOINT" | quote }}
+  - name: S3_REGION
+    value: {{ requiredEnv "S3_REGION" | quote }}
+  - name: S3_SECRET_KEY
+    value: {{ requiredEnv "S3_SECRET_KEY" | quote }}
+    sensitive: true
+  - name: STORAGE_BOOT_SERVER_MODE
+    value: {{ env "STORAGE_BOOT_SERVER_MODE" | default "AS_REST_API_SERVER" | quote }}
+  - name: STORAGE_CLEANER
+    value: {{ requiredEnv "STORAGE_CLEANER" | quote }}
+  - name: STORAGE_LOGLEVEL
+    value: {{ requiredEnv "STORAGE_LOGLEVEL" | quote }}
+  - name: STORAGE_MONITORING_ENABLED
+    value: {{ env "STORAGE_MONITORING_ENABLED" | default "1" | quote }}
+  - name: STORAGE_PORT
+    value: {{ requiredEnv "STORAGE_PORT" | quote }}
+  - name: STORAGE_PROFILING
+    value: {{ requiredEnv "STORAGE_PROFILING" | quote }}
+  - name: STORAGE_TRACING
+    value: {{ requiredEnv "STORAGE_TRACING" | quote }}
+  - name: TRACING_OPENTELEMETRY_COLLECTOR_BATCH_SIZE
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_COLLECTOR_BATCH_SIZE" | quote }}
+  - name: TRACING_OPENTELEMETRY_COLLECTOR_ENDPOINT
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_COLLECTOR_ENDPOINT" | quote }}
+  - name: TRACING_OPENTELEMETRY_COLLECTOR_IMAGE_VERSION
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_COLLECTOR_IMAGE_VERSION" | quote }}
+  - name: TRACING_OPENTELEMETRY_COLLECTOR_PORT
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_COLLECTOR_PORT" | quote }}
+  - name: TRACING_OPENTELEMETRY_SAMPLING_PROBABILITY
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_SAMPLING_PROBABILITY" | quote }}
+  - name: TRACING_OPENTELEMETRY_TRACED_FUNCTIONS
+    value: {{ requiredEnv "TRACING_OPENTELEMETRY_TRACED_FUNCTIONS" | quote }}
+
+# no route served at "/", the image's HEALTHCHECK probes /v0/
+probes:
+  startup:
+    httpGet:
+      path: /v0/
+      port: http
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 24
+  readiness:
+    httpGet:
+      path: /v0/
+      port: http
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  liveness:
+    httpGet:
+      path: /v0/
+      port: http
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5

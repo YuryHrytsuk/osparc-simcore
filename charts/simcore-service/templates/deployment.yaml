@@ -18,6 +18,9 @@ spec:
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
     spec:
       automountServiceAccountToken: false
+      # k8s injects <SERVICE>_PORT=tcp://<ip>:<port> for services in the namespace,
+      # which clashes with the *_PORT env settings the services read
+      enableServiceLinks: false
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:

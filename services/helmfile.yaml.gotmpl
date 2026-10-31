@@ -49,3 +49,9 @@ releases:
   - name: static-webserver
     inherit:
       - template: simcore-service
+
+  - name: storage
+    inherit:
+      - template: simcore-service
+    needs:
+      - {{ $namespace }}/datcore-adapter
