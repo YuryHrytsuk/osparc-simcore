@@ -1,3 +1,10 @@
+# image of the storage releases: sto-worker* include this file and run the same image
+image:
+  repository: {{ env "DOCKER_REGISTRY" | default "itisfoundation" }}/storage
+  tag: {{ env "DOCKER_IMAGE_TAG" | default "master-github-latest" | quote }}
+
+{{- $bootMode := hasPrefix "sto-" .Release.Name | ternary "AS_CELERY_WORKER" "AS_REST_API_SERVER" }}
+
 # entrypoint.sh runs update-ca-certificates, which needs a writable /etc
 containerSecurityContext:
   readOnlyRootFilesystem: false
@@ -70,7 +77,7 @@ env:
     value: {{ requiredEnv "S3_SECRET_KEY" | quote }}
     sensitive: true
   - name: STORAGE_BOOT_SERVER_MODE
-    value: {{ env "STORAGE_BOOT_SERVER_MODE" | default "AS_REST_API_SERVER" | quote }}
+    value: {{ $bootMode | quote }}
   - name: STORAGE_CLEANER
     value: {{ requiredEnv "STORAGE_CLEANER" | quote }}
   - name: STORAGE_LOGLEVEL

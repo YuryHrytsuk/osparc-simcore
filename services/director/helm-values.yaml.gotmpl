@@ -1,3 +1,7 @@
+image:
+  repository: {{ env "DOCKER_REGISTRY" | default "itisfoundation" }}/director
+  tag: {{ env "DOCKER_IMAGE_TAG" | default "master-github-latest" | quote }}
+
 # entrypoint.sh adds scu to the docker socket's group, which needs a writable /etc
 containerSecurityContext:
   readOnlyRootFilesystem: false

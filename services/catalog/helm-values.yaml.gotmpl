@@ -1,3 +1,7 @@
+image:
+  repository: {{ env "DOCKER_REGISTRY" | default "itisfoundation" }}/catalog
+  tag: {{ env "DOCKER_IMAGE_TAG" | default "master-github-latest" | quote }}
+
 resources:
   requests:
     cpu: 100m

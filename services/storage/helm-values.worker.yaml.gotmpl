@@ -1,0 +1,55 @@
+{{- $profiles := dict
+  "sto-worker" (dict "pool" "threads" "concurrency" "100" "queues" "default")
+  "sto-worker-cpu-bound" (dict "pool" "prefork" "concurrency" "1" "queues" "cpu_bound") }}
+{{- $profile := index $profiles .Release.Name | required (printf "no celery profile for release %s" .Release.Name) }}
+
+service:
+  enabled: false
+
+extraEnv:
+  - name: NODE_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: spec.nodeName
+  - name: POD_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
+  - name: POD_UID
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.uid
+  - name: STORAGE_WORKER_NAME
+    value: "{{ .Release.Name }}-$(NODE_NAME)-$(POD_NAME)-$(POD_UID)"
+  - name: HEALTHCHECK_MODE
+    value: "heartbeat"
+  - name: CELERY_QUEUES
+    value: {{ $profile.queues | quote }}
+  - name: CELERY_CONCURRENCY
+    value: {{ $profile.concurrency | quote }}
+  - name: CELERY_POOL
+    value: {{ $profile.pool | quote }}
+
+# a celery worker serves no HTTP: healthy == worker heartbeat written to /tmp/heartbeat
+probes:
+  startup:
+    httpGet: null
+    exec:
+      command: ["python3", "-S", "/home/scu/docker/healthcheck.py", "http://localhost:8080/v0/"]
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 24
+  readiness:
+    httpGet: null
+    exec:
+      command: ["python3", "-S", "/home/scu/docker/healthcheck.py", "http://localhost:8080/v0/"]
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  liveness:
+    httpGet: null
+    exec:
+      command: ["python3", "-S", "/home/scu/docker/healthcheck.py", "http://localhost:8080/v0/"]
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5

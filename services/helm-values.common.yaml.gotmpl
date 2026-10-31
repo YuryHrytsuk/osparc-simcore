@@ -1,3 +1,0 @@
-image:
-  repository: {{ env "DOCKER_REGISTRY" | default "itisfoundation" }}/{{ .Release.Name }}
-  tag: {{ env "DOCKER_IMAGE_TAG" | default "master-github-latest" | quote }}
