@@ -6,29 +6,25 @@
 service:
   enabled: false
 
-extraEnv:
-  - name: NODE_NAME
+env:
+  NODE_NAME:
     valueFrom:
       fieldRef:
         fieldPath: spec.nodeName
-  - name: POD_NAME
+  POD_NAME:
     valueFrom:
       fieldRef:
         fieldPath: metadata.name
-  - name: POD_UID
+  POD_UID:
     valueFrom:
       fieldRef:
         fieldPath: metadata.uid
-  - name: STORAGE_WORKER_NAME
-    value: "{{ .Release.Name }}-$(NODE_NAME)-$(POD_NAME)-$(POD_UID)"
-  - name: HEALTHCHECK_MODE
-    value: "heartbeat"
-  - name: CELERY_QUEUES
-    value: {{ $profile.queues | quote }}
-  - name: CELERY_CONCURRENCY
-    value: {{ $profile.concurrency | quote }}
-  - name: CELERY_POOL
-    value: {{ $profile.pool | quote }}
+  STORAGE_BOOT_SERVER_MODE: "AS_CELERY_WORKER"
+  STORAGE_WORKER_NAME: "{{ .Release.Name }}-$(NODE_NAME)-$(POD_NAME)-$(POD_UID)"
+  HEALTHCHECK_MODE: "heartbeat"
+  CELERY_QUEUES: {{ $profile.queues | quote }}
+  CELERY_CONCURRENCY: {{ $profile.concurrency | quote }}
+  CELERY_POOL: {{ $profile.pool | quote }}
 
 # a celery worker serves no HTTP: healthy == worker heartbeat written to /tmp/heartbeat
 probes:

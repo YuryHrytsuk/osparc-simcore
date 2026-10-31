@@ -13,14 +13,10 @@ containerSecurityContext:
     add: []
 
 env:
-  - name: SERVER_HOST
-    value: "0.0.0.0"
-  - name: SERVER_LOG_LEVEL
-    value: "error"
-  - name: SERVER_PORT
-    value: "8000"
-  - name: SERVER_ROOT
-    value: "/static-content"
+  SERVER_HOST: "0.0.0.0"
+  SERVER_LOG_LEVEL: "error"
+  SERVER_PORT: "8000"
+  SERVER_ROOT: "/static-content"
 
 resources:
   requests:

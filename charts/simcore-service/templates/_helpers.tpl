@@ -14,20 +14,14 @@ helm.sh/chart: {{ printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" }}
 {{- end -}}
 
 {{- define "simcore-service.containerEnv" -}}
-{{- range concat (.Values.env | default list) (.Values.extraEnv | default list) }}
-- name: {{ .name }}
-  {{- if .valueFrom }}
-  valueFrom:
-    {{- toYaml .valueFrom | nindent 4 }}
-  {{- else if .sensitive }}
-  valueFrom:
-    secretKeyRef:
-      name: {{ include "simcore-service.envSecretName" $ }}
-      key: {{ .name }}
-  {{- else if ne .value nil }}
-  value: {{ .value | quote }}
+{{- range $name, $v := .Values.env }}
+{{- if not (kindIs "invalid" $v) }}
+- name: {{ $name }}
+  {{- if kindIs "map" $v }}
+  {{- toYaml $v | nindent 2 }}
   {{- else }}
-  value: ""
+  value: {{ $v | toString | quote }}
   {{- end }}
+{{- end }}
 {{- end }}
 {{- end -}}

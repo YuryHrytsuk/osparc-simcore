@@ -43,6 +43,11 @@ spec:
           {{- end }}
           securityContext:
             {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          {{- if .Values.secretEnv }}
+          envFrom:
+            - secretRef:
+                name: {{ include "simcore-service.envSecretName" . }}
+          {{- end }}
           {{- with (include "simcore-service.containerEnv" . | trim) }}
           env:
             {{- . | nindent 12 }}
