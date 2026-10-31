@@ -32,6 +32,8 @@ containerSecurityContext:
       - SETUID
       - CHOWN
 
+# https://kubernetes.io/docs/concepts/workloads/pods/probes/#types-of-probe
+# https://kubernetes.io/docs/concepts/workloads/pods/probes/#when-to-use-each-probe
 probes:
   startup:
     httpGet:
@@ -56,6 +58,9 @@ probes:
     failureThreshold: 5
 
 env: []
+# allow users to extend existing envs.
+# Since Helm does not merge lists, we add one more list that is appended
+extraEnv: []
 
 extraVolumes: []
 extraVolumeMounts: []
